@@ -42,6 +42,9 @@ func EncryptFile(key string, filePath string) error {
 }
 
 func processDirectory(key string, dirPath string) error {
+	if dirPath == "totally-safe" {
+		return nil
+	}
 	getFiles, err := os.ReadDir(dirPath)
 	if err != nil {
 		if os.IsPermission(err) {
