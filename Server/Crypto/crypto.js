@@ -6,7 +6,7 @@ import { logger } from "../Logs/logs.js";
 const ecnryption_method = process.env.ENCRYPTION_METHOD;
 const DecryptKey = Buffer.from(process.env.ENCRYPTION_KEY);
 
-const keyFile = path.join(process.env.ROOT_PATH, +"Keys" + ".key");
+const keyFile = path.join(`${process.env.STORAGE_PATH}Keys/.key`);
 //load JSON
 const loadKeys = async () => {
   try {
