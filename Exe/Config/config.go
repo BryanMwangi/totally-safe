@@ -32,9 +32,9 @@ func GoDotEnvVariable(key string) string {
 func GetValuesInProd(key string) string {
 	switch key {
 	case "SERVER_URL":
-		return `https://totally-safe.fly.dev/`
+		return ``
 	case "API_KEY":
-		return `TSbvhjsavghykvcvgEXE`
+		return ``
 	}
 	return ""
 }
